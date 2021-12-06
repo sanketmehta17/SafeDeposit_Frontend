@@ -1,3 +1,4 @@
+/* Author: Dhrumil Amish Shah (B00857606) */
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import useStyles from './styles';

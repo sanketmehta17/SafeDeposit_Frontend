@@ -1,3 +1,4 @@
+/* Author: Dhrumil Amish Shah (B00857606) */
 // Import the functions you need from the SDKs you need
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";

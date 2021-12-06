@@ -1,3 +1,4 @@
+/* Author: Dhrumil Amish Shah (B00857606) */
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
 import { firebaseDb } from '../../_firebase';

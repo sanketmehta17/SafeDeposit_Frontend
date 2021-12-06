@@ -1,3 +1,4 @@
+/* Author: Dhrumil Amish Shah (B00857606) */
 import React, { useState } from 'react';
 import { CssBaseline, Grid, Paper, TextField, Typography, Button } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
