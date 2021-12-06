@@ -1,3 +1,4 @@
+/* Author: Dhrumil Amish Shah (B00857606) */
 import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles((theme) => ({

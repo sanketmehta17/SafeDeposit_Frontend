@@ -1,7 +1,9 @@
+/* Author: Dhrumil Amish Shah (B00857606) */
 import { v4 as uuidv4 } from 'uuid';
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
 import { firebaseDb } from '../../_firebase';
+import { createTopic } from '../../apis/MessagePassingAPIs';
 dotenv.config();
 
 AWS.config.update({
@@ -27,6 +29,22 @@ const updateSafeDepositBox = async (lastSafeDepositBox, documentClient) => {
     return lastSafeDepositBox.safeDepositId;
 }
 
+const updateUserTopicName = async (user, documentClient) => {
+    var updatedUserEntryParams = {
+        TableName: "user",
+        Key: {
+            userId: user.userId
+        },
+        UpdateExpression: "set topicName = :tn",
+        ExpressionAttributeValues: {
+            ":tn": user.topicName
+        },
+        ReturnValues: "UPDATED_NEW"
+    };
+    await documentClient.update(updatedUserEntryParams).promise();
+    return user.userId;
+}
+
 const newUserCreation = async (user, randomSafeDepositID, documentClient) => {
     const userEntryId = uuidv4().toString();
     const userEntry = {
@@ -41,7 +59,7 @@ const newUserCreation = async (user, randomSafeDepositID, documentClient) => {
     return userEntryId;
 }
 
-const newSafeDepositBoxCreation = async (documentClient, counterValue) => {
+const newSafeDepositBoxCreation = async (documentClient) => {
     const randomSafeDepositID = uuidv4().toString();
     const safeDepositEntry = {
         safeDepositId: randomSafeDepositID,
@@ -87,5 +105,14 @@ export const performRegistration = async (user) => {
         userId: userEntryID,
         safeDepositId: randomSafeDepositID
     });
+
+    user["userId"] = userEntryID;
+    const createTopicData = await createTopic(user);
+    if (createTopicData.data.success) {
+        console.log(createTopicData.data.message);
+        user["topicName"] = createTopicData.data.payload;
+        console.log(user);
+    }
+    await updateUserTopicName(user, documentClient);
     return true;
 };
