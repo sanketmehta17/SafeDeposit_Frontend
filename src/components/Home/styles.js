@@ -29,5 +29,14 @@ export default makeStyles((theme) => ({
     },
     publishMessage: {
         marginTop: '16px',
+    },
+    circularProgress: {
+        color: '#4267B2',
+        marginLeft: theme.spacing(4),
+    },
+    container: {
+        display: 'flex',
+        alignItems: 'center',
+        marginTop: theme.spacing(2),
     }
 }));

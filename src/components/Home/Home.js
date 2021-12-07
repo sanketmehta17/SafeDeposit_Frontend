@@ -1,15 +1,59 @@
 /* Author: Dhrumil Amish Shah (B00857606) */
-import React, { useState } from 'react';
-import { CssBaseline, Grid, Paper, TextField, Typography, Button } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import AWS from 'aws-sdk';
+import { CssBaseline, Grid, Paper, TextField, Typography, Button, CircularProgress, Card, CardContent } from '@material-ui/core';
 import { useLocation } from 'react-router-dom';
-import { publishMessage } from '../../apis/MessagePassingAPIs';
+import { publishMessage, pullDelivery } from '../../apis/MessagePassingAPIs';
 import useStyles from './styles';
+
+
+AWS.config.update({
+    region: process.env.REACT_APP_AWS_REGION,
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_KEY,
+    sessionToken: process.env.REACT_APP_AWS_SESSION_TOKEN,
+});
+
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 export const Home = () => {
     const [messageData, setMessageData] = useState({ message: '' });
+    const [messagesReceived, setMessagesReceived] = useState([]);
     const [errors, setErrors] = useState({ messageValid: false });
     const userReceivedProps = useLocation().state;
     const classes = useStyles();
+
+    useEffect(() => {
+        pullMessages();
+    }, []);
+
+    const pullMessages = async () => {
+        const safeDepositId = userReceivedProps.safeDepositId;
+        const emailId = userReceivedProps.email;
+        const sameSafeDepositUsers = {
+            TableName: "user",
+            FilterExpression: "#safeDepositId = :safeDepositId and not #emailId = :emailId",
+            ExpressionAttributeNames: {
+                "#safeDepositId": "safeDepositId",
+                "#emailId": "email",
+            },
+            ExpressionAttributeValues: {
+                ":safeDepositId": safeDepositId,
+                ":emailId": emailId,
+            }
+        };
+        const sameSafeDepositUsersData = await documentClient.scan(sameSafeDepositUsers).promise();
+        var msgs = [...messagesReceived];
+        for (var i = 0; i < sameSafeDepositUsersData.Items.length; ++i) {
+            const userData = {};
+            userData["topicName"] = sameSafeDepositUsersData["Items"][i].topicName;
+            userData["userId"] = userReceivedProps.userId;
+            const receivedMessagesData = await pullDelivery(userData);
+            msgs = msgs.concat(receivedMessagesData.data.payload);
+        }
+        console.log(msgs);
+        setMessagesReceived(msgs);
+    };
 
     const fieldsValid = () => {
         if (errors.messageValid) {
@@ -49,7 +93,7 @@ export const Home = () => {
         if (fieldsValid()) {
             const user = {}
             user["topicName"] = userReceivedProps.topicName;
-            user["message"] = messageData.message;
+            user["message"] = `${userReceivedProps.firstName} ${userReceivedProps.lastName}: ${messageData.message}`;
             const publishMessageData = await publishMessage(user);
             if (publishMessageData.data.success) {
                 console.log("Message published successfully.");
@@ -86,10 +130,34 @@ export const Home = () => {
                             helperText={errors["message"]}
                         />
                         <Button disabled={!fieldsValid()} className={classes.submit} color="secondary" variant="contained" fullWidth type="submit">
-                            Publish Message
+                            Publish Message From {userReceivedProps.firstName}
                         </Button>
                     </form>
                 </div>
+                {!messagesReceived.length ?
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent:'center' }}>
+                        <Typography>Waiting for new messages ... :) </Typography>
+                        <CircularProgress className={classes.circularProgress} /></div> :
+                    (<Grid className={classes.container}
+                        container alignItems="center"
+                        spacing={1}>
+                        {messagesReceived.map((messageReceived, index) => {
+                            return <Grid item xs={12} sm={12} md={12} lg={12} key={index}>
+                                <div style={{ marginLeft: "16px", marginRight: "16px" }}>
+                                    <Card elevation={6} component={Paper}>
+                                        <CardContent>
+                                            <Typography sx={{ fontSize: 14 }} color="primary" gutterBottom>
+                                                {messageReceived.split(':')[0]}
+                                            </Typography>
+                                            <Typography variant="h5" component="div">
+                                                {messageReceived.split(':')[1]}
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </Grid>
+                        })}
+                    </Grid>)}
             </Grid>
         </Grid>
     );

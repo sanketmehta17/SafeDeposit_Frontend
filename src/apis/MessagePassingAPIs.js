@@ -24,6 +24,6 @@ export const publishMessage = (userData) => {
 export const pullDelivery = (userData) => {
     return axios({
         method: "GET",
-        url: `${BASE_URL}/pubsubmessage/chat/pullDelivery/${userData.topicName}/${userData.userId}/${userData.email}`,
+        url: `${BASE_URL}/pubsubmessage/chat/pullDelivery?topicName=${userData.topicName}&userId=${userData.userId}`,
     });
 };
