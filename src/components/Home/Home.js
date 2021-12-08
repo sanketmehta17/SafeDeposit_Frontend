@@ -107,7 +107,7 @@ export const Home = () => {
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} className={classes.image} />
+            <iframe width="50%" height="50%" src="https://datastudio.google.com/embed/reporting/e5461c66-61cb-4669-85f5-019f7f17fc86/page/gwMhC" />
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square className={classes.formBackground}>
                 <div className={classes.paper}>
                     <Typography component="h3" variant="h3" fontWeight="fontWeightBold">

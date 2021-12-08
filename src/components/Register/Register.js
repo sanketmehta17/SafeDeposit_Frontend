@@ -299,6 +299,9 @@ export const Register = () => {
                             Register
                         </Button>
                         <div className={classes.loginLink}>Already have an account? <Link to={"/login1"}>Login</Link></div>
+                        <Button className={classes.submit} color="secondary" variant="contained" fullWidth type="submit">
+                        <Link to={"/online-support"}>SafeDeposit Bot</Link>
+                        </Button>
                     </form>
                 </div>
             </Grid>
