@@ -6,6 +6,7 @@ import { Login2 } from "./components/Login/Login2";
 import { Login3 } from "./components/Login/Login3";
 import { Register } from "./components/Register/Register";
 import { Home } from "./components/Home/Home";
+import OnlineSupport from "./components/support/OnlineSupport";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route exact path="/login2" element={<Login2 />} />
         <Route exact path="/login3" element={<Login3 />} />
         <Route exact path="/home" element={<Home />} />
+        <Route exact path="/online-support" element={<OnlineSupport />} />
       </Routes>
     </BrowserRouter>
   );
