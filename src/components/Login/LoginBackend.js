@@ -53,11 +53,11 @@ export const performLogin2 = async (user) => {
     }
 };
 
-export const decryptCipher = (encryptedCipher) => {
+export const decryptCipher = (encryptedCipher, randomKey) => {
     const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     var decryptedCipher = '';
     for (var i = 0; i < encryptedCipher.length; ++i) {
-        var index = alphabets.indexOf(encryptedCipher[i]) - 3;
+        var index = alphabets.indexOf(encryptedCipher[i]) - randomKey;
         if (index < 0) {
             index = index + 26;
         }
@@ -68,7 +68,7 @@ export const decryptCipher = (encryptedCipher) => {
 
 export const generateEncryptedCipher = () => {
     const charString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const length = 1;
+    const length = 3;
     var result = '';
     for (var i = length; i > 0; --i) {
         result += charString[Math.floor(Math.random() * charString.length)];

@@ -6,8 +6,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { decryptCipher, generateEncryptedCipher } from './LoginBackend';
 import useStyles from './styles';
 
+const randomKey = Math.floor(Math.random() * 5) + 1
+
 const encryptedCipher = generateEncryptedCipher();
-const decryptedCipher = decryptCipher(encryptedCipher);
+const decryptedCipher = decryptCipher(encryptedCipher, randomKey);
 
 export const Login3 = () => {
     const [userData, updateUserData] = useState({
@@ -77,7 +79,7 @@ export const Login3 = () => {
                         SafeDeposit Login Page 3 - 3
                     </Typography>
                     <form onSubmit={onSubmit} className={classes.form} noValidate>
-                        <div className={classes.securityQuestion}>Decrypt Ceaser Cipher:&nbsp;<span style={{ fontWeight: "bold" }}>{encryptedCipher}</span> | Key = <ArrowForwardIcon /> 3 </div>
+                        <div className={classes.securityQuestion}>Decrypt Ceaser Cipher:&nbsp;<span style={{ fontWeight: "bold" }}>{encryptedCipher}</span> | Key = <ArrowForwardIcon /> {randomKey} </div>
                         <TextField
                             fullWidth
                             margin="normal"
