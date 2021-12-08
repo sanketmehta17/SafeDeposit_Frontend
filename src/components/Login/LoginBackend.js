@@ -68,7 +68,7 @@ export const decryptCipher = (encryptedCipher, randomKey) => {
 
 export const generateEncryptedCipher = () => {
     const charString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const length = 3;
+    const length = 1;
     var result = '';
     for (var i = length; i > 0; --i) {
         result += charString[Math.floor(Math.random() * charString.length)];

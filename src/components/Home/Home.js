@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import AWS from 'aws-sdk';
 import { CssBaseline, Grid, Paper, TextField, Typography, Button, CircularProgress, Card, CardContent } from '@material-ui/core';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { publishMessage, pullDelivery } from '../../apis/MessagePassingAPIs';
 import useStyles from './styles';
 
@@ -107,9 +107,14 @@ export const Home = () => {
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline />
-            <iframe width="50%" height="50%" src="https://datastudio.google.com/embed/reporting/e5461c66-61cb-4669-85f5-019f7f17fc86/page/gwMhC" />
+            <Grid item xs={12} sm={4} md={7}>
+                <iframe title="Google Data Studio Charts" width="100%" height="70%" src="https://datastudio.google.com/embed/reporting/d9501b3d-2b89-4c1a-a692-8ea71f8069ac/page/p_k4holg83pc" />
+            </Grid>
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square className={classes.formBackground}>
                 <div className={classes.paper}>
+                    <Button className={classes.submit} color="secondary" variant="contained" type="submit">
+                        <Link to={"/login1"} style={{ color: "#FFFFFF" }}>Logout</Link>
+                    </Button>
                     <Typography component="h3" variant="h3" fontWeight="fontWeightBold">
                         Message Other Users
                     </Typography>
@@ -135,7 +140,7 @@ export const Home = () => {
                     </form>
                 </div>
                 {!messagesReceived.length ?
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent:'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Typography>Waiting for new messages ... :) </Typography>
                         <CircularProgress className={classes.circularProgress} /></div> :
                     (<Grid className={classes.container}
