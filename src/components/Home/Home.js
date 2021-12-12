@@ -29,6 +29,8 @@ export const Home = () => {
         pullMessages();
     }, []);
 
+    
+
     const pullMessages = async () => {
         const safeDepositId = userReceivedProps.safeDepositId;
         const emailId = userReceivedProps.email;
