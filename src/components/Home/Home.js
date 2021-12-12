@@ -18,9 +18,11 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 
 export const Home = () => {
     const [messageData, setMessageData] = useState({ message: '' });
+    const [messageData1, setMessageData1] = useState({ message1: '' });
     const [messagesReceived, setMessagesReceived] = useState([]);
     const [errors, setErrors] = useState({ messageValid: false });
     const userReceivedProps = useLocation().state;
+    // const safeDepositReceivedProps = safeDepositBalance;
     const classes = useStyles();
 
     useEffect(() => {
@@ -42,6 +44,7 @@ export const Home = () => {
                 ":emailId": emailId,
             }
         };
+
         const sameSafeDepositUsersData = await documentClient.scan(sameSafeDepositUsers).promise();
         var msgs = [...messagesReceived];
         for (var i = 0; i < sameSafeDepositUsersData.Items.length; ++i) {
@@ -88,6 +91,14 @@ export const Home = () => {
         });
     };
 
+    const onChange1 = (e) => {
+        validate(e);
+        setMessageData1({
+            ...messageData1,
+            [e.target.name]: e.target.value
+        });
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
         if (fieldsValid()) {
@@ -104,17 +115,51 @@ export const Home = () => {
         }
     };
 
+    const onSubmit1 = async (e) => {
+        e.preventDefault();
+        if (fieldsValid()) {
+            const user = {}
+            user["topicName"] = userReceivedProps.safeDepositId;
+            user["message"] = `${userReceivedProps.firstName} ${userReceivedProps.lastName}: ${messageData.message}`;
+        }
+    };
+
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline />
             <Grid item xs={12} sm={4} md={7}>
-                <iframe title="Google Data Studio Charts" width="100%" height="70%" src="https://datastudio.google.com/embed/reporting/d9501b3d-2b89-4c1a-a692-8ea71f8069ac/page/p_k4holg83pc" />
+                <iframe title="Google Data Studio Charts" width="100%" height="70%" src="https://datastudio.google.com/embed/reporting/820b780c-573c-4232-a045-3d30bf5a7165/page/mjbhC" />
             </Grid>
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square className={classes.formBackground}>
                 <div className={classes.paper}>
                     <Button className={classes.submit} color="secondary" variant="contained" type="submit">
                         <Link to={"/login1"} style={{ color: "#FFFFFF" }}>Logout</Link>
                     </Button>
+  
+                    <Typography component="h5" variant="h5" fontWeight="fontWeightBold">
+                        Current Balance: 
+                    </Typography>
+                    <form onSubmit={onSubmit1} className={classes.form} noValidate>
+                        <div className={classes.publishMessage}>Withdraw money from SafeDeposit Box: {userReceivedProps.safeDepositId}</div>
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            id="message1"
+                            type="text"
+                            name="message1"
+                            label="Enter Amount"
+                            variant="outlined"
+                            required
+                            value={messageData1.message}
+                            onChange={onChange1}
+                            error={errors["message1"] ? true : false}
+                            helperText={errors["message1"]}
+                        />
+                        <Button className={classes.submit} color="secondary" variant="contained" fullWidth type="submit">
+                            Withdraw Money
+                        </Button>
+                    </form>
+
                     <Typography component="h3" variant="h3" fontWeight="fontWeightBold">
                         Message Other Users
                     </Typography>
