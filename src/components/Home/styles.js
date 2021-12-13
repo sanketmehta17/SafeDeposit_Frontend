@@ -25,7 +25,10 @@ export default makeStyles((theme) => ({
         marginTop: theme.spacing(2),
     },
     submit: {
-        margin: theme.spacing(3, 0, 2),
+        margin: theme.spacing(1, 0, 2),
+    },
+    imageSubmit: {
+        margin: theme.spacing(1, 0, 4),
     },
     publishMessage: {
         marginTop: '16px',
