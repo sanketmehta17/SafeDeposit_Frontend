@@ -22,14 +22,14 @@ export const Home = () => {
     const [messagesReceived, setMessagesReceived] = useState([]);
     const [errors, setErrors] = useState({ messageValid: false });
     const userReceivedProps = useLocation().state;
-    // const safeDepositReceivedProps = safeDepositBalance;
     const classes = useStyles();
+    const safeDepositAmount = 5000;
 
     useEffect(() => {
         pullMessages();
     }, []);
 
-    
+
 
     const pullMessages = async () => {
         const safeDepositId = userReceivedProps.safeDepositId;
@@ -119,11 +119,6 @@ export const Home = () => {
 
     const onSubmit1 = async (e) => {
         e.preventDefault();
-        if (fieldsValid()) {
-            const user = {}
-            user["topicName"] = userReceivedProps.safeDepositId;
-            user["message"] = `${userReceivedProps.firstName} ${userReceivedProps.lastName}: ${messageData.message}`;
-        }
     };
 
     return (
@@ -139,10 +134,10 @@ export const Home = () => {
                     </Button>
   
                     <Typography component="h5" variant="h5" fontWeight="fontWeightBold">
-                        Current Balance: 
+                        Current Balance: {safeDepositAmount}
                     </Typography>
                     <form onSubmit={onSubmit1} className={classes.form} noValidate>
-                        <div className={classes.publishMessage}>Withdraw money from SafeDeposit Box: {userReceivedProps.safeDepositId}</div>
+                        <div>Withdraw money from SafeDeposit Box: {userReceivedProps.safeDepositId}</div>
                         <TextField
                             fullWidth
                             margin="normal"
@@ -152,10 +147,10 @@ export const Home = () => {
                             label="Enter Amount"
                             variant="outlined"
                             required
-                            value={messageData1.message}
+                            value={messageData1.message1}
                             onChange={onChange1}
-                            error={errors["message1"] ? true : false}
-                            helperText={errors["message1"]}
+                            error={errors["message"] ? true : false}
+                            helperText={errors["message"]}
                         />
                         <Button className={classes.submit} color="secondary" variant="contained" fullWidth type="submit">
                             Withdraw Money
