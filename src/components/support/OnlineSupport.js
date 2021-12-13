@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import { Link } from 'react-router-dom';
-import { Grid, Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import LexChat from "react-lex-plus";
 
 class OnlineSupport extends Component {

@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import AWS from 'aws-sdk';
 import { CssBaseline, Grid, Paper, TextField, Typography, Button, CircularProgress, Card, CardContent } from '@material-ui/core';
 import { useLocation, Link } from 'react-router-dom';
-import { publishMessage, pullDelivery } from '../../apis/MessagePassingAPIs';
+import { publishMessage, pullDelivery, uploadImage } from '../../apis/MessagePassingAPIs';
 import useStyles from './styles';
-
 
 AWS.config.update({
     region: process.env.REACT_APP_AWS_REGION,
@@ -18,18 +17,20 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 
 export const Home = () => {
     const [messageData, setMessageData] = useState({ message: '' });
-    const [messageData1, setMessageData1] = useState({ message1: '' });
-    const [messagesReceived, setMessagesReceived] = useState([]);
     const [errors, setErrors] = useState({ messageValid: false });
+
+    const [withdrawMoneyData, setWithdrawMoneyData] = useState({ money: 0 });
+
+    const [imageData, setImageData] = useState({ imageLocation: '' });
+
+    const [messagesReceived, setMessagesReceived] = useState([]);
     const userReceivedProps = useLocation().state;
+
     const classes = useStyles();
-    const safeDepositAmount = 5000;
 
     useEffect(() => {
         pullMessages();
     }, []);
-
-
 
     const pullMessages = async () => {
         const safeDepositId = userReceivedProps.safeDepositId;
@@ -59,6 +60,18 @@ export const Home = () => {
         console.log(msgs);
         setMessagesReceived(msgs);
     };
+
+    const uploadImageData = async () => {
+        const imageFormData = new FormData();
+        console.log(userReceivedProps.userId);
+        imageFormData.append("userId", userReceivedProps.userId);
+        imageFormData.append("imageLocation", imageData.imageLocation);
+        try {
+            await uploadImage(imageFormData);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const fieldsValid = () => {
         if (errors.messageValid) {
@@ -93,11 +106,18 @@ export const Home = () => {
         });
     };
 
-    const onChange1 = (e) => {
-        validate(e);
-        setMessageData1({
-            ...messageData1,
+    const onWithdrawMoneyChange = (e) => {
+        setWithdrawMoneyData({
+            ...withdrawMoneyData,
             [e.target.name]: e.target.value
+        });
+    };
+
+    const onImageChange = (e) => {
+        const imageFile = e.target.files[0];
+        setImageData({
+            ...imageData,
+            [e.target.name]: imageFile
         });
     };
 
@@ -117,7 +137,12 @@ export const Home = () => {
         }
     };
 
-    const onSubmit1 = async (e) => {
+    const onImageDataSubmit = async (e) => {
+        e.preventDefault();
+        uploadImageData();
+    }
+
+    const onWithdrawMoneySubmit = async (e) => {
         e.preventDefault();
     };
 
@@ -125,39 +150,60 @@ export const Home = () => {
         <Grid container component="main" className={classes.root}>
             <CssBaseline />
             <Grid item xs={12} sm={4} md={7}>
-                <iframe title="Google Data Studio Charts" width="100%" height="70%" src="https://datastudio.google.com/embed/reporting/820b780c-573c-4232-a045-3d30bf5a7165/page/mjbhC" />
-            </Grid>
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square className={classes.formBackground}>
-                <div className={classes.paper}>
-                    <Button className={classes.submit} color="secondary" variant="contained" type="submit">
-                        <Link to={"/login1"} style={{ color: "#FFFFFF" }}>Logout</Link>
-                    </Button>
-  
-                    <Typography component="h5" variant="h5" fontWeight="fontWeightBold">
-                        Current Balance: {safeDepositAmount}
+                <iframe title="Google Data Studio Charts" width="100%" height="50%" src="https://datastudio.google.com/embed/reporting/d9501b3d-2b89-4c1a-a692-8ea71f8069ac/page/p_k4holg83pc" />
+                <div style={{ marginTop: '16px', marginLeft: '32px', marginRight: '32px' }}>
+                    <Typography component="h4" variant="h4" fontWeight="fontWeightBold">
+                        Logged In As: {userReceivedProps.firstName} {userReceivedProps.lastName}
                     </Typography>
-                    <form onSubmit={onSubmit1} className={classes.form} noValidate>
-                        <div>Withdraw money from SafeDeposit Box: {userReceivedProps.safeDepositId}</div>
+                    <Typography component="p" variant="p" fontWeight="fontWeightBold">
+                        SafeDeposit Id: {userReceivedProps.safeDepositId}
+                    </Typography>
+                    <Typography component="p" variant="p" fontWeight="fontWeightBold">
+                        SafeDeposit Amount: 5000
+                    </Typography>
+                    <form onSubmit={onWithdrawMoneySubmit} noValidate>
                         <TextField
                             fullWidth
                             margin="normal"
-                            id="message1"
-                            type="text"
-                            name="message1"
-                            label="Enter Amount"
+                            id="withdrawMoney"
+                            type="number"
+                            name="withdrawMoney"
+                            label="Enter amount to withdraw"
                             variant="outlined"
                             required
-                            value={messageData1.message1}
-                            onChange={onChange1}
-                            error={errors["message"] ? true : false}
-                            helperText={errors["message"]}
+                            value={withdrawMoneyData.money}
+                            onChange={onWithdrawMoneyChange}
                         />
-                        <Button className={classes.submit} color="secondary" variant="contained" fullWidth type="submit">
+                        <Button color="secondary" variant="contained" type="submit">
                             Withdraw Money
                         </Button>
                     </form>
-
-                    <Typography component="h3" variant="h3" fontWeight="fontWeightBold">
+                </div>
+            </Grid>
+            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square className={classes.formBackground}>
+                <div className={classes.paper}>
+                    <Button color="secondary" variant="contained" type="submit">
+                        <Link to={"/login1"} style={{ color: "#FFFFFF" }}>Logout</Link>
+                    </Button>
+                    <form onSubmit={onImageDataSubmit} className={classes.form} autoComplete="off" noValidate method="POST" enctype="multipart/form-data">
+                        <Typography component="h4" variant="h4" fontWeight="fontWeightBold">
+                            Upload Image To Publish Messages
+                        </Typography>
+                        <div style={{ marginTop: '8px' }}>
+                            <input
+                                fullWidth
+                                id="imageLocation"
+                                type="file"
+                                name="imageLocation"
+                                accept="image/*"
+                                required
+                                onChange={onImageChange} />
+                        </div>
+                        <Button className={classes.imageSubmit} color="secondary" variant="contained" type="submit">
+                            Upload Image
+                        </Button>
+                    </form>
+                    <Typography component="h4" variant="h4" fontWeight="fontWeightBold">
                         Message Other Users
                     </Typography>
                     <form onSubmit={onSubmit} className={classes.form} noValidate>
@@ -176,7 +222,7 @@ export const Home = () => {
                             error={errors["message"] ? true : false}
                             helperText={errors["message"]}
                         />
-                        <Button disabled={!fieldsValid()} className={classes.submit} color="secondary" variant="contained" fullWidth type="submit">
+                        <Button disabled={!fieldsValid()} className={classes.submit} color="secondary" variant="contained" type="submit">
                             Publish Message From {userReceivedProps.firstName}
                         </Button>
                     </form>

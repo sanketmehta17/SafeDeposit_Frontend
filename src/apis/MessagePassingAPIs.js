@@ -27,3 +27,12 @@ export const pullDelivery = (userData) => {
         url: `${BASE_URL}/pubsubmessage/chat/pullDelivery?topicName=${userData.topicName}&userId=${userData.userId}`,
     });
 };
+
+export const uploadImage = (imageData) => {
+    return axios({
+        method: "POST",
+        url: `${BASE_URL}/pubsubmessage/uploadImage`,
+        data: imageData,
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+};
